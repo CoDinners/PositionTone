@@ -1,29 +1,42 @@
 package prj.codinners.positiontone.root;
 
 import prj.codinners.positiontone.Colors;
+import prj.codinners.positiontone.TextFormat;
 import prj.codinners.positiontone.rootobject.Board;
 import prj.codinners.positiontone.rootobject.RootObject;
+import prj.codinners.positiontone.rootobject.Text;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 
 public class Root implements Runnable {
-    private Display display;
-    
+    private int width, height;
+    private String caption;
+
     private Thread thread;
     private boolean running = false;
 
+    private MouseManager mouseManager;
+    private Display display;
+
     public Root(int width, int height, String caption) {
-        this.display = new Display(width, height, caption);
+        this.width = width;
+        this.height = height;
+        this.caption = caption;
 
         thread = new Thread(this);
     }
 
     private void init() {
-        RootObject.add(new Board(display));
+        mouseManager = new MouseManager();
+        display = new Display(width, height, caption, this);
+
+        RootObject.add(new Board(display, this));
     }
 
     private void tick() {
+        mouseManager.tick();
+
         for (RootObject object : RootObject.OBJECTS) {
             object.tick();
         }
@@ -77,7 +90,7 @@ public class Root implements Runnable {
         }
     }
 
-    public Display getDisplay() {
-        return display;
+    public MouseManager getMouseManager() {
+        return mouseManager;
     }
 }
