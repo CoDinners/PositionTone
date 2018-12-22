@@ -1,10 +1,10 @@
 package prj.codinners.positiontone.root;
 
 import prj.codinners.positiontone.Colors;
-import prj.codinners.positiontone.TextFormat;
-import prj.codinners.positiontone.rootobject.Board;
 import prj.codinners.positiontone.rootobject.RootObject;
-import prj.codinners.positiontone.rootobject.Text;
+import prj.codinners.positiontone.rootobject.board.Board;
+import prj.codinners.positiontone.rootobject.board.GomokuBoard;
+import prj.codinners.positiontone.rootobject.board.KoreanChessBoard;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -18,6 +18,7 @@ public class Root implements Runnable {
 
     private MouseManager mouseManager;
     private Display display;
+    private Board board;
 
     public Root(int width, int height, String caption) {
         this.width = width;
@@ -31,11 +32,13 @@ public class Root implements Runnable {
         mouseManager = new MouseManager();
         display = new Display(width, height, caption, this);
 
-        RootObject.add(new Board(display, this));
+        board = new GomokuBoard(display, this);
     }
 
     private void tick() {
         mouseManager.tick();
+
+        board.tick();
 
         for (RootObject object : RootObject.OBJECTS) {
             object.tick();
@@ -53,6 +56,8 @@ public class Root implements Runnable {
 
         graphics.setColor(Colors.BACKGROUND);
         graphics.fillRect(0, 0, display.getWidth(), display.getHeight());
+
+        board.render(graphics);
 
         for (RootObject object : RootObject.OBJECTS) {
             object.render(graphics);

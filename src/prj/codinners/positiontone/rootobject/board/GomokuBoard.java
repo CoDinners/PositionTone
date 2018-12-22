@@ -1,14 +1,15 @@
-package prj.codinners.positiontone.rootobject;
+package prj.codinners.positiontone.rootobject.board;
 
 import prj.codinners.positiontone.Colors;
 import prj.codinners.positiontone.TextFormat;
 import prj.codinners.positiontone.root.Display;
-import prj.codinners.positiontone.root.MouseManager;
 import prj.codinners.positiontone.root.Root;
+import prj.codinners.positiontone.rootobject.RootObject;
+import prj.codinners.positiontone.rootobject.Text;
 
 import java.awt.*;
 
-public class Board extends RootObject {
+public class GomokuBoard implements Board {
     private Display display;
     private Root root;
 
@@ -17,10 +18,15 @@ public class Board extends RootObject {
     private boolean deployable = true, cursorout = false;
     private int previewBoxX, previewBoxY;
 
-    public Board(Display display, Root root) {
+    public GomokuBoard(Display display, Root root) {
         this.display = display;
         this.root = root;
 
+        init();
+    }
+
+    @Override
+    public void init() {
         gap = (display.getHeight() - 40) / 18;
         size = gap * 18;
     }
@@ -32,28 +38,27 @@ public class Board extends RootObject {
             previewBoxY = 20 - gap / 2 + (9 - getPositionY()) * gap;
 
             cursorout = getPositionX() == Integer.MAX_VALUE || getPositionY() == Integer.MAX_VALUE;
-
-            System.out.println(positionToString());
         }
     }
 
-    private int getPositionX() {
-        int x = root.getMouseManager().getX();
-        if (20 - gap / 2 < x && x < 20 + 18.5 * gap) {  // 20 + 18.5 * gap == 20 - gap / 2 + 'gap * 19'
+    @Override
+    public int getPositionX() {
+        int x = root.getMouseManager().getX() - 20 + gap / 2;
+        if (x / gap < 19)
             return x / gap - 9;
-        }
         return Integer.MAX_VALUE;
     }
 
-    private int getPositionY() {
-        int y = root.getMouseManager().getY();
-        if (20 - gap / 2 < y && y < 20 + 18.5 * gap) {
+    @Override
+    public int getPositionY() {
+        int y = root.getMouseManager().getY() - 20 + gap / 2;
+        if (y / gap < 19)
             return 9 - y / gap;
-        }
         return Integer.MAX_VALUE;
     }
 
-    private String positionToString() {
+    @Override
+    public String positionToString() {
         return "" + getPositionX() + getPositionY();
     }
 
