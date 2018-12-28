@@ -18,6 +18,8 @@ public class GomokuBoard implements Board {
     private boolean deployable = true, cursorOut = false;
     private int previewBoxX, previewBoxY;
 
+    private int turn;
+
     public GomokuBoard(Display display, Root root) {
         this.display = display;
         this.root = root;
@@ -31,6 +33,8 @@ public class GomokuBoard implements Board {
         size = gap * 18;
 
         boardState = new BoardState(19, 19, root.getConnector());
+
+        turn = 0;
     }
 
     @Override
@@ -43,14 +47,49 @@ public class GomokuBoard implements Board {
 
             if (!cursorOut) {
                 if (root.getMouseManager().getEndPressed()[0]) {
-                    boardState.deployBlack(getPositionX() + 9, getPositionY() + 9);
-                } else if (root.getMouseManager().getEndPressed()[2]) {
-                    boardState.deployWhite(getPositionX() + 9, getPositionY() + 9);
-                } else if (root.getMouseManager().getEndPressed()[1]) {
-                    boardState.take(getPositionX() + 9, getPositionY() + 9);
+                    if (boardState.get(getPositionX() + 9, getPositionY() + 9) == BoardPiece.NONE) {
+                        if (turn % 2 == 0) {
+                            boardState.deployBlack(getPositionX() + 9, getPositionY() + 9);
+                        } else {
+                            boardState.deployWhite(getPositionX() + 9, getPositionY() + 9);
+                        }
+                        turn++;
+                    }
                 }
             }
         }
+
+        System.out.println(getWinner());
+    }
+
+    private BoardPiece getWinner() {
+        BoardPiece[][] state = boardState.getState();
+
+        for (int i = 0; i < 19; i++)
+            for (int j = 0; j < 19; j++) {
+                if (state[i][j] == BoardPiece.NONE) continue;
+                for (int p = -1; p <= 1; p++)
+                    for (int q = -1; q <= 1; q++) {
+                        if (p == 0 && q == 0) continue;
+                        boolean flag = true;
+                        for (int k = 1; k < 5; k++) {
+                            if (!(0 <= i + k*p && i + k*p < 19 && 0 <= j + k*q && j + k*q < 19)) {
+                                flag = false;
+                                break;
+                            }
+                            if (state[i + k*p][j + k*q] != state[i][j]) {
+                                flag = false;
+                                break;
+                            }
+                        }
+
+                        if (flag) {
+                            return state[i][j];
+                        }
+                    }
+            }
+
+        return BoardPiece.NONE;
     }
 
     @Override
@@ -93,25 +132,27 @@ public class GomokuBoard implements Board {
         graphics2D.drawLine(position, 22, position, 18 + size);  // 세로
         graphics2D.drawLine(22, position, 18 + size, position);  // 가로
 
-        if (deployable && !cursorOut) {
-            graphics2D.setComposite(AlphaComposite.SrcOver.derive(0.3f));
-            graphics2D.fillRect(previewBoxX, previewBoxY, gap, gap);
-            graphics2D.setComposite(AlphaComposite.SrcOver.derive(1f));
-            new Text(20, 15, positionToString(), new TextFormat(root.getPropertiesManager().getProperties("font"), 16, Colors.LINE)).render(graphics);
-        }
-
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         for (int y = -9; y <= 9; y++) {
             for (int x = -9; x <= 9; x++) {
                 BoardPiece state = boardState.get(x + 9 , y + 9);
                 if (state != BoardPiece.NONE) {
-                    if (state == BoardPiece.BLACK)
+                    if (state == BoardPiece.BLACK) {
                         graphics.setColor(Colors.BLACK);
-                    else
+                    }
+                    else {
                         graphics.setColor(Colors.WHITE);
+                    }
                     graphics2D.fillOval(20 + (x + 9) * gap - gap / 4, 20 + (9 - y) * gap - gap / 4, gap / 2, gap / 2);
                 }
             }
+        }
+
+        graphics2D.setColor(Colors.LINE);
+        if (deployable && !cursorOut) {
+            graphics2D.setComposite(AlphaComposite.SrcOver.derive(0.3f));
+            graphics2D.fillRect(previewBoxX, previewBoxY, gap, gap);
+            graphics2D.setComposite(AlphaComposite.SrcOver.derive(1f));
         }
     }
 }

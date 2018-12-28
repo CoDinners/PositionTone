@@ -1,11 +1,14 @@
 package prj.codinners.positiontone.client.root;
 
-import prj.codinners.positiontone.client.Colors;
 import prj.codinners.positiontone.PropertiesManager;
+import prj.codinners.positiontone.client.Colors;
 import prj.codinners.positiontone.client.communication.Connector;
 import prj.codinners.positiontone.client.rootobject.RootObject;
 import prj.codinners.positiontone.client.rootobject.board.Board;
 import prj.codinners.positiontone.client.rootobject.board.GomokuBoard;
+import prj.codinners.positiontone.client.state.InGame;
+import prj.codinners.positiontone.client.state.Lobby;
+import prj.codinners.positiontone.client.state.State;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -21,8 +24,8 @@ public class Root implements Runnable {
     private PropertiesManager propertiesManager;
     private MouseManager mouseManager;
     private Display display;
-    private Board board;
     private Connector connector;
+    private State state;
 
     public Root() {
         propertiesManager = new PropertiesManager("./config/client/setting.ini");
@@ -47,14 +50,13 @@ public class Root implements Runnable {
 
         connector = new Connector(propertiesManager.getProperties("host"), Integer.parseInt(propertiesManager.getProperties("port")));
 
-        board = new GomokuBoard(display, this);
+        state = new Lobby(display, propertiesManager);
     }
 
     private void tick() {
         mouseManager.tick();
 
-        board.tick();
-
+        state.tick();
         for (RootObject object : RootObject.OBJECTS) {
             object.tick();
         }
@@ -72,8 +74,7 @@ public class Root implements Runnable {
         graphics.setColor(Colors.BACKGROUND);
         graphics.fillRect(0, 0, display.getWidth(), display.getHeight());
 
-        board.render(graphics);
-
+        state.render(graphics);
         for (RootObject object : RootObject.OBJECTS) {
             object.render(graphics);
         }

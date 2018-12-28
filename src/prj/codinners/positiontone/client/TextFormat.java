@@ -1,6 +1,9 @@
 package prj.codinners.positiontone.client;
 
 import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 
@@ -33,5 +36,15 @@ public class TextFormat {
 
     public Font getFont() {
         return font;
+    }
+
+    public float getSize() {
+        return size;
+    }
+
+    public int getWidth(String string) {
+        AffineTransform affineTransform = new AffineTransform();
+        FontRenderContext fontRenderContext = new FontRenderContext(affineTransform, true, true);
+        return (int) font.getStringBounds(string, fontRenderContext).getWidth();
     }
 }

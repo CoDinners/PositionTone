@@ -4,14 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Display {
-    private int width, height, fps;
+    private int width, height;
+    private double fps;
     private String caption;
     private Root root;
 
     private JFrame frame;
     private Canvas canvas;
 
-    Display(int width, int height, int fps, String caption, Root root) {
+    Display(int width, int height, double fps, String caption, Root root) {
         this.width = width;
         this.height = height;
         this.fps = fps;
@@ -46,7 +47,7 @@ public class Display {
         return canvas;
     }
 
-    int getWidth() {
+    public int getWidth() {
         return width;
     }
 
@@ -54,7 +55,11 @@ public class Display {
         return height;
     }
 
-    int getFps() {
+    public double getFps() {
         return fps;
+    }
+
+    public void setFps(double fps) {
+        this.fps = fps;
     }
 }

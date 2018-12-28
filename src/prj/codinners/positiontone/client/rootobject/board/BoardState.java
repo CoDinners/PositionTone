@@ -52,4 +52,8 @@ class BoardState {
     BoardPiece get(int x, int y) {
         return state[y][x];
     }
+
+    public BoardPiece[][] getState() {
+        return state;
+    }
 }
