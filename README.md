@@ -14,3 +14,4 @@
 * 코드 길이
     * 100줄: December 21st, 2018
     * 500줄: December 23rd, 2018
+    * 1000줄: December 28th, 2018
