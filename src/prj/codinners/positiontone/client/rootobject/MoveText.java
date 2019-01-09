@@ -28,16 +28,28 @@ public class MoveText extends RootObject {
         double deltaX = targetX - x, deltaY = targetY - y;
 
         if (deltaX != 0) {
-            if (deltaX < 1)
+            if (Math.abs(deltaX) < 1)
                 x = targetX;
             else
                 x += deltaX / (display.getFps() / friction);
         } if (deltaY != 0) {
-            if (deltaY < 1)
+            if (Math.abs(deltaY) < 1)
                 y = targetY;
             else
                 y += deltaY / (display.getFps() / friction);
         }
+    }
+
+    private boolean isXMoveStopped() {
+        return targetX - x == 0;
+    }
+
+    private boolean isYMoveStopped() {
+        return targetY - y == 0;
+    }
+
+    public boolean isMoveStopped() {
+        return isXMoveStopped() && isYMoveStopped();
     }
 
     @Override

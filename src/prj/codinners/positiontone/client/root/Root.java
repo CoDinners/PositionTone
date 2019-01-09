@@ -3,11 +3,9 @@ package prj.codinners.positiontone.client.root;
 import prj.codinners.positiontone.PropertiesManager;
 import prj.codinners.positiontone.client.Colors;
 import prj.codinners.positiontone.client.communication.Connector;
+import prj.codinners.positiontone.client.rootobject.Image;
 import prj.codinners.positiontone.client.rootobject.RootObject;
-import prj.codinners.positiontone.client.rootobject.board.Board;
-import prj.codinners.positiontone.client.rootobject.board.GomokuBoard;
-import prj.codinners.positiontone.client.state.InGame;
-import prj.codinners.positiontone.client.state.Lobby;
+import prj.codinners.positiontone.client.state.Intro;
 import prj.codinners.positiontone.client.state.State;
 
 import java.awt.*;
@@ -50,7 +48,7 @@ public class Root implements Runnable {
 
         connector = new Connector(propertiesManager.getProperties("host"), Integer.parseInt(propertiesManager.getProperties("port")));
 
-        state = new Lobby(display, propertiesManager);
+        state = new Intro(display, this);
     }
 
     private void tick() {
@@ -133,11 +131,15 @@ public class Root implements Runnable {
         return mouseManager;
     }
 
-    public PropertiesManager getPropertiesManager() {
-        return propertiesManager;
-    }
-
     public Connector getConnector() {
         return connector;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public PropertiesManager getPropertiesManager() {
+        return propertiesManager;
     }
 }
